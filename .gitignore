@@ -1,2 +1,4 @@
 settings.json
 __pycache__
+env_ro
+*.ipynb
