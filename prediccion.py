@@ -7,14 +7,20 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
 # Traerse la data
-id_item = 4049
+# id_item = 4133  # Raydric Card
+# id_item = 1466  # Crescent Scythe
+id_item = 4133  # Raydric Card
+# id_item = 4035  # Hydra Card
+
 
 fetcher = ItemDataFetcher(id_item)
 fetcher.fetch_data()
 sells_dataframe = fetcher.sells_dataframe
+vending_dataframe = fetcher.vending_dataframe
 
 # Preprocesamiento para el modelo
 sell_dataframe_ordered = sells_dataframe.sort_values(by='ds', ascending=False).reset_index(drop=True).reset_index()
+vending_dataframe_ordered = vending_dataframe.sort_values(by='ds', ascending=False).reset_index(drop=True).reset_index()
 
 rango_ventana = np.arange(1, 31)
 
@@ -84,3 +90,26 @@ plt.title('Comparación de Valores Reales y Predichos')
 plt.legend()
 plt.show()
 
+#importancia variables
+
+# Obtener la importancia de las características
+importances = model.feature_importances_
+
+# Crear un DataFrame para una mejor visualización
+feature_importance_df = pd.DataFrame({
+    'Feature': X_train.columns,
+    'Importance': importances
+})
+
+# Ordenar el DataFrame por importancia
+feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
+print(feature_importance_df)
+
+# Crear un gráfico de barras
+plt.figure(figsize=(10, 6))
+plt.barh(feature_importance_df['Feature'], feature_importance_df['Importance'])
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.title('Feature Importance')
+plt.gca().invert_yaxis()  # Invertir el eje y para que la característica más importante aparezca arriba
+plt.show()
