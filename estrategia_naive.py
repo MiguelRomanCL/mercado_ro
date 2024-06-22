@@ -16,7 +16,9 @@ id_item = 4035  # Hydra Card
 # Cambiarlo por el json
 ruta_cartas = "cards.json"
 df_objetos = pd.read_json(ruta_cartas)
-df_objetos = df_objetos.rename(columns={'Nombre': 'Carta', 'ID': 'ID'})
+
+
+df_objetos = df_objetos.rename(columns={"Nombre": "Carta", "ID": "ID"})
 
 threshold_porcentaje_compra = 0.7
 porcentaje_ganancia_minima = 1.3
@@ -68,7 +70,7 @@ for index_object, row_object in tqdm(df_objetos.iterrows(), total=len(df_objetos
 
     list_of_rows = []
     # Revisamos los puntos donde queremos comprar
-    for index, row in listing_df.query("Buy_Point == 1 and y > 0").iterrows():
+    for index, row in listing_df.query("Buy_Point == 1").iterrows():
         fecha_compra = row["ds"]
         precio_compra = row["y"]
         mav_compra = row["MAV"]
@@ -108,3 +110,48 @@ for index_object, row_object in tqdm(df_objetos.iterrows(), total=len(df_objetos
     list_of_dfs.append(df)
 
 df_final = pd.concat(list_of_dfs)
+
+df_final["ganancia_media_diaria"] = (
+    df_final["valor_ganancia"] / df_final["dias_transcurridos"]
+)
+df_final["porcentaje_retorno"] = (
+    100 * df_final["precio_venta"] / df_final["precio_compra"]
+)
+
+
+ts_analisis = "2024-04-01"
+data_carta = df_final.query("fecha_compra >= @ts_analisis")
+display(data_carta.head())
+
+mean_dias_transcurridos = data_carta["dias_transcurridos"].mean()
+mean_ganancia_diaria = data_carta["ganancia_media_diaria"].mean()
+mean_porcentaje_retorno = data_carta["porcentaje_retorno"].mean()
+
+
+df_summary = (
+    df_final.query("fecha_compra >= @ts_analisis")
+    .groupby("Carta")
+    .agg(
+        {
+            "ID": "first",
+            "dias_transcurridos": "mean",
+            "ganancia_media_diaria": "mean",
+            # "porcentaje_retorno": "mean",
+            "fecha_compra": "min",
+            "mav_compra": "count",
+        }
+    )
+    # .sort_values(by="porcentaje_retorno", ascending=False)
+    .rename(
+        columns={
+            "ID": "ID Carta",
+            "dias_transcurridos": "Dias Transcurridos Promedio",
+            "ganancia_media_diaria": "Ganancia Media Diaria",
+            "fecha_compra": "Inicio Análisis",
+            "mav_compra": "Cantidad_Operaciones",
+        }
+    )
+)
+df_summary["Ganancia Media Diaria"] = df_summary["Ganancia Media Diaria"].apply(
+    lambda x: int(x)
+)
