@@ -123,7 +123,6 @@ df_final["porcentaje_retorno"] = (
 
 ts_analisis = "2024-04-01"
 data_carta = df_final.query("fecha_compra >= @ts_analisis")
-display(data_carta.head())
 
 mean_dias_transcurridos = data_carta["dias_transcurridos"].mean()
 mean_ganancia_diaria = data_carta["ganancia_media_diaria"].mean()
