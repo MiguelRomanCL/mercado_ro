@@ -6,6 +6,7 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
+import time
 
 # Traerse la data
 # id_item = 4133  # Raydric Card
@@ -28,6 +29,7 @@ limite_espera_venta = 30
 # Vamos a generar df con las compras y ventas para cada carta
 list_of_dfs = []
 for index_object, row_object in tqdm(df_objetos.iterrows(), total=len(df_objetos)):
+    time.sleep(0.5)
     nombre_carta = row_object["Carta"]
     id_carta = row_object["ID"]
 
