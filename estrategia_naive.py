@@ -14,9 +14,9 @@ from tqdm import tqdm
 id_item = 4035  # Hydra Card
 
 # Cambiarlo por el json
-ruta_excel = "C:\\Users\\mnrom\\Downloads\\Weaitas RO.xlsx"
-df_objetos = pd.read_excel(ruta_excel, sheet_name="Objetos")
-
+ruta_cartas = "cards.json"
+df_objetos = pd.read_json(ruta_cartas)
+df_objetos = df_objetos.rename(columns={'Nombre': 'Carta', 'ID': 'ID'})
 
 threshold_porcentaje_compra = 0.7
 porcentaje_ganancia_minima = 1.3
