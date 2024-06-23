@@ -27,7 +27,7 @@ def obtener_datos_carta(id_carta):
     """Obtiene los datos de compra y venta para una carta dada."""
     fetcher = ItemDataFetcher(id_carta)
     fetcher.fetch_data()
-    return fetcher.sells_dataframe, fetcher.vending_dataframe
+    return fetcher.sells_dataframe, fetcher.listing_dataframe
 
 
 def eliminar_valores_extremos_inferiores(
@@ -189,14 +189,14 @@ def identificar_oportunidades_venta(
 def analizar_estrategia_naive_carta_especifica(id_carta):
     """Procesa una sola carta, retornando oportunidades de venta si existen."""
     # Obtener los dataframes de venta y compra para la carta
-    sells_df, vending_df = obtener_datos_carta(id_carta)
+    sells_df, listing_df = obtener_datos_carta(id_carta)
 
     # Procesar los datos de compra y asignar puntos de compra
-    processed_vending_df = procesar_datos(
-        vending_df, columna_precio="y", umbral_std_multiplo=UMBRAL_STD_MULTI
+    processed_listing_df = procesar_datos(
+        listing_df, columna_precio="y", umbral_std_multiplo=UMBRAL_STD_MULTI
     )
-    processed_vending_df = asignar_puntos_compra(
-        processed_vending_df,
+    processed_listing_df = asignar_puntos_compra(
+        processed_listing_df,
         threshold_comprar_prop=PROP_UMBRAL_COMPRA,
         diferencia_bruta_min=GANANCIA_BRUTA_MIN,
     )
@@ -208,7 +208,7 @@ def analizar_estrategia_naive_carta_especifica(id_carta):
 
     # Identificar oportunidades de venta
     oportunidades = identificar_oportunidades_venta(
-        dataframe_compra=processed_vending_df,
+        dataframe_compra=processed_listing_df,
         dataframe_venta=processed_sells_df,
         ganancia_bruta_min=GANANCIA_BRUTA_MIN,
         ganancia_porcentual_min=GANANCIA_PORCENTUAL_MIN,
