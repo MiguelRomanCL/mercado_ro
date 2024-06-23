@@ -243,3 +243,93 @@ def analizar_estrategia_naive_todas_las_cartas(df_cartas):
         return (
             pd.DataFrame()
         )  # Devuelve un DataFrame vacío si no se encontraron oportunidades
+
+
+def obtener_listing_df_con_info_sells(
+    id_carta,
+    threshold_comprar_prop=PROP_UMBRAL_COMPRA,
+    diferencia_bruta_min=GANANCIA_BRUTA_MIN,
+    umbral_std_multiplo=UMBRAL_STD_MULTI,
+):
+    """
+    Enriquecer el dataframe de listings con información de ventas.
+
+    Parámetros:
+    id_carta (int): ID de la carta para la cual se obtendrán los datos.
+    threshold_comprar_prop (float): Umbral proporcional para identificar puntos de compra.
+    diferencia_bruta_min (float): Diferencia bruta mínima para considerar una compra.
+    umbral_std_multiplo (int): Multiplicador del umbral de desviación estándar.
+
+    Retorna:
+    DataFrame: DataFrame enriquecido con la información de ventas.
+    """
+
+    # Obtener los dataframes de venta y compra para la carta
+    sells_df, listing_df = obtener_datos_carta(id_carta)
+
+    # Validar que los dataframes no estén vacíos
+    if sells_df.empty or listing_df.empty:
+        raise ValueError("Los dataframes de ventas o listings están vacíos.")
+
+    # Procesar los datos de compra y asignar puntos de compra
+    processed_listing_df = procesar_datos(
+        listing_df, columna_precio="y", umbral_std_multiplo=umbral_std_multiplo
+    )
+    processed_listing_df = asignar_puntos_compra(
+        processed_listing_df,
+        threshold_comprar_prop=threshold_comprar_prop,
+        diferencia_bruta_min=diferencia_bruta_min,
+    )
+
+    # Procesar los datos de venta
+    processed_sells_df = procesar_datos(
+        sells_df, columna_precio="y", umbral_std_multiplo=umbral_std_multiplo
+    )
+
+    # Crear un resumen de los datos de venta
+    summary_sells_df = (
+        processed_sells_df.groupby("ds")
+        .agg(
+            {
+                "y": "mean",
+                "MAV": "mean",
+                "STD": "mean",
+                "UMBRAL_STD_MULTI": "mean",
+                "Lim_Inf": "mean",
+            }
+        )
+        .reset_index()
+    )
+    summary_sells_df.set_index("ds", inplace=True)
+
+    # Resamplear y rellenar datos faltantes en el resumen de ventas
+    summary_sells_resampled = (
+        summary_sells_df.resample("D")
+        .interpolate(method="linear")
+        .reset_index()
+        .drop(columns=["UMBRAL_STD_MULTI", "y"])
+    )
+
+    # Eliminar columnas no necesarias de los datos de compra procesados
+    processed_listing_df = processed_listing_df.drop(
+        columns=["UMBRAL_STD_MULTI", "Buy_Point", "Lim_Inf", "MAV", "STD"]
+    )
+
+    # Fusionar los datos de compra procesados con el resumen de ventas resampleado
+    listing_df_enriched = pd.merge(
+        processed_listing_df,
+        summary_sells_resampled,
+        on="ds",
+        how="left",
+    )
+
+    # Asignar puntos de compra al dataframe enriquecido
+    listing_df_enriched = asignar_puntos_compra(
+        dataframe=listing_df_enriched,
+        threshold_comprar_prop=threshold_comprar_prop,
+        diferencia_bruta_min=diferencia_bruta_min,
+    )
+
+    listing_df_enriched["ID"] = id_carta
+
+    return listing_df_enriched
