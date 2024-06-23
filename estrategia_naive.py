@@ -15,8 +15,6 @@ from parameters import (
     TIEMPO_SLEEP_ENTRE_CARTAS,
 )
 
-pd.set_option("display.float_format", "{:.2f}".format)
-
 
 def cargar_datos(ruta="cards.json"):
     """Carga y renombra los datos desde un archivo JSON."""
