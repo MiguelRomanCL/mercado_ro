@@ -286,6 +286,16 @@ def obtener_listing_df_con_info_sells(
         sells_df, columna_precio="y", umbral_std_multiplo=umbral_std_multiplo
     )
 
+    processed_sells_df["Diff_ds"] = processed_sells_df["ds"].diff().dt.days
+    processed_sells_df["MAV_Diff_ds"] = (
+        processed_sells_df["Diff_ds"].rolling(window=14, min_periods=1).mean()
+    )
+
+    fecha_ultima_venta = processed_sells_df["ds"].max()
+    promedio_liquidez_venta_final = processed_sells_df.query(
+        "ds == @fecha_ultima_venta"
+    )["MAV_Diff_ds"].values[0]
+
     # Crear un resumen de los datos de venta
     summary_sells_df = (
         processed_sells_df.groupby("ds")
@@ -302,13 +312,21 @@ def obtener_listing_df_con_info_sells(
     )
     summary_sells_df.set_index("ds", inplace=True)
 
-    # Resamplear y rellenar datos faltantes en el resumen de ventas
+    fecha_min = processed_listing_df["ds"].min()
+    fecha_max = processed_listing_df["ds"].max()
+
+    # Crear rango de fechas
+    date_range = pd.date_range(start=fecha_min, end=fecha_max)
+
+    # Reindexar con el rango de fechas antes del resampleo
+    summary_sells_df = summary_sells_df.reindex(date_range)
+
     summary_sells_resampled = (
         summary_sells_df.resample("D")
         .interpolate(method="linear")
         .reset_index()
         .drop(columns=["UMBRAL_STD_MULTI", "y"])
-    )
+    ).rename(columns={"index": "ds"})
 
     # Eliminar columnas no necesarias de los datos de compra procesados
     processed_listing_df = processed_listing_df.drop(
@@ -329,6 +347,9 @@ def obtener_listing_df_con_info_sells(
         threshold_comprar_prop=threshold_comprar_prop,
         diferencia_bruta_min=diferencia_bruta_min,
     )
+
+    listing_df_enriched["fecha_ultima_venta"] = fecha_ultima_venta
+    listing_df_enriched["promedio_liquidez_venta_final"] = promedio_liquidez_venta_final
 
     listing_df_enriched["ID"] = id_carta
 
