@@ -17,6 +17,7 @@ class ItemDataFetcher:
         self.sells_dataframe = pd.DataFrame(columns=["ds", "y"])
         self.listing_dataframe = pd.DataFrame(columns=["ds", "y"])
         self.hora_actualizacion = None
+        self.raw_data = None
 
     def fetch_data(self):
         request_url = self.base_url + str(self.id_item)
@@ -35,6 +36,8 @@ class ItemDataFetcher:
         self.listing_dataframe = self.listing_dataframe.sort_values(
             by="ds"
         ).reset_index(drop=True)
+
+        self.raw_data = data
 
     def _process_sells(self, sell_history):
         for sell_iterate in range(0, len(sell_history)):
@@ -101,3 +104,19 @@ class ItemDataFetcher:
             )
             list_of_rows.append(dict_info)
         return pd.DataFrame(list_of_rows).iloc[::-1].reset_index(drop=True)
+
+
+#
+def filtrar_elementos_sin_carta(datos, upgrade=0):
+    return [
+        elemento
+        for elemento in datos
+        if all(
+            filter_item["r"] == upgrade
+            and filter_item["c0"] == 0
+            and filter_item["c1"] == 0
+            and filter_item["c2"] == 0
+            and filter_item["c3"] == 0
+            for filter_item in elemento["filter"]
+        )
+    ]
