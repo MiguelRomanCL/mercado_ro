@@ -361,5 +361,31 @@ def obtener_listing_df_con_info_sells(
     listing_df_enriched["Dias_Transcurridos_tras_ultima_venta"] = (
         listing_df_enriched["Fecha_Actual"] - listing_df_enriched["fecha_ultima_venta"]
     ).dt.days
+    listing_df_enriched["Dias_Transcurridos_Ultimo_Listing"] = (
+        listing_df_enriched["Fecha_Actual"] - listing_df_enriched["ds"]
+    ).dt.days
 
     return listing_df_enriched
+
+
+def obtener_oportunidades_compra_recientes(
+    df_cartas, maxima_ventana_dias_hacia_atras=5, verbose=True
+):
+    list_of_dfs = []
+    for index, carta in tqdm(df_cartas.iterrows(), total=df_cartas.shape[0]):
+        id_carta = carta["ID"]
+        nombre_carta = carta["Carta"]
+
+        listing_df_enriched = obtener_listing_df_con_info_sells(id_carta)
+        last_date_ts = listing_df_enriched["ds"].max()
+        listing_df_last = listing_df_enriched.query("ds == @last_date_ts").copy()
+        listing_df_last["Carta"] = nombre_carta
+        list_of_dfs.append(listing_df_last)
+
+    df = pd.concat(list_of_dfs).reset_index(drop=True)
+    dt_filtered = df.query(
+        "Buy_Point == 1 and Dias_Transcurridos_Ultimo_Listing <= @maxima_ventana_dias_hacia_atras"
+    )
+    if len(dt_filtered) == 0 and verbose == True:
+        print("No hay oportunidades de venta disponibles")
+    return dt_filtered
