@@ -350,7 +350,16 @@ def obtener_listing_df_con_info_sells(
 
     listing_df_enriched["fecha_ultima_venta"] = fecha_ultima_venta
     listing_df_enriched["promedio_liquidez_venta_final"] = promedio_liquidez_venta_final
-
     listing_df_enriched["ID"] = id_carta
+
+    timestamp_pandas = pd.Timestamp("now", tz="America/Santiago")
+
+    # Hace el objeto Timestamp naive y normaliza a solo la fecha
+    fecha_hoy = timestamp_pandas.tz_localize(None).normalize()
+
+    listing_df_enriched["Fecha_Actual"] = fecha_hoy
+    listing_df_enriched["Dias_Transcurridos_tras_ultima_venta"] = (
+        listing_df_enriched["Fecha_Actual"] - listing_df_enriched["fecha_ultima_venta"]
+    ).dt.days
 
     return listing_df_enriched
