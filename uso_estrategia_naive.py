@@ -36,7 +36,9 @@ for index, carta in tqdm(df_cartas.iterrows(), total=df_cartas.shape[0]):
     listing_df_last = listing_df_enriched.query("ds == @last_date_ts").copy()
     listing_df_last["Carta"] = nombre_carta
     list_of_dfs.append(listing_df_last)
-
+    time.sleep(
+            TIEMPO_SLEEP_ENTRE_CARTAS
+        ) 
 
 df = pd.concat(list_of_dfs).reset_index(drop=True)
 
