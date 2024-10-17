@@ -52,4 +52,4 @@ def detectar_oportunidad_una_carta(id_carta):
     opportunity_by_ganancia = int(ganancia_por_dia > GANANCIA_BRUTA_DIARIA)
     opportunity = int(opportunity_by_value + opportunity_by_ganancia == 2)
 
-    return opportunity
+    return mav, std, last_date_listed, cheaper_value, mean_days_to_sell, opportunity
