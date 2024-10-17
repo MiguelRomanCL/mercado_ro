@@ -52,4 +52,8 @@ def detectar_oportunidad_una_carta(id_carta):
     opportunity_by_ganancia = int(ganancia_por_dia > GANANCIA_BRUTA_DIARIA)
     opportunity = int(opportunity_by_value + opportunity_by_ganancia == 2)
 
-    return mav, std, last_date_listed, cheaper_value, mean_days_to_sell, opportunity
+    #dato util para estimar la ultima venta y detectar si es una oportunidad decente
+    last_date_selled = sells_df.sort_values(by="ds", ascending=False).reset_index(drop=True)['ds'][0]
+    last_sell_price = sells_df[sells_df['ds'] == last_date_selled].sort_values(by = 'y',ascending = True).reset_index(drop=True)['y'][0]
+
+    return mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity
