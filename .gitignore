@@ -6,3 +6,7 @@ Data
 
 lambda_functios/fetch-api/fetch_data_lambda.zip
 lambda_functions/fetch-api/package
+
+files
+*.csv
+*.log

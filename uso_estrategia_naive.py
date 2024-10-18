@@ -1,48 +1,56 @@
 # Versión para EDA de la estrategia naive en el pasado
 import estrategia_naive as naive
 import pandas as pd
-
-df_cartas = naive.cargar_datos()
-# restriccion temporal para no cargar todas las cartas
-df_cartas = df_cartas.head(3)
-
-df_resultados = naive.analizar_estrategia_naive_todas_las_cartas(df_cartas)
-
-
-## También dejamos otro ejemplo de como analizar la información en tiempo real
-# Versión para tiempo real
-import estrategia_naive as naive
-
-import pandas as pd
-from parameters import TIEMPO_SLEEP_ENTRE_CARTAS
 import time
-from tqdm import tqdm
+from parameters import (
+    TIEMPO_SLEEP_ENTRE_CARTAS,
+)
+
 
 df_cartas = naive.cargar_datos()
 
+all_cards_opportunities = pd.DataFrame()
+for card_id in df_cartas['ID']:
+    print (card_id)
+    mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity = naive.detectar_oportunidad_una_carta(card_id)
 
-# Configurar pandas para usar un formato específico en los números flotantes
-# pd.set_option("display.float_format", "{:,.0f}".format)
+    # Create a temporary DataFrame for the current card
+    temp_df = pd.DataFrame({
+        'ID': [card_id],
+        'mav': [mav],
+        'std': [std],
+        'last_date_listed': [last_date_listed],
+        'last_sell_price': [last_sell_price],
+        'cheaper_value': [cheaper_value],
+        'mean_days_to_sell': [mean_days_to_sell],
+        'opportunity': [opportunity]
+    })
 
-df_cartas = df_cartas.head(10)
+    all_cards_opportunities = pd.concat([all_cards_opportunities, temp_df], ignore_index=True)
+    time.sleep(TIEMPO_SLEEP_ENTRE_CARTAS)
 
-list_of_dfs = []
-for index, carta in tqdm(df_cartas.iterrows(), total=df_cartas.shape[0]):
-    id_carta = carta["ID"]
-    nombre_carta = carta["Carta"]
+df_with_card_names = pd.merge(df_cartas, all_cards_opportunities, how = 'left', on = 'ID')
+df_with_card_names.to_csv('test.csv', sep = ';')
 
-    listing_df_enriched = naive.obtener_listing_df_con_info_sells(id_carta)
-    last_date_ts = listing_df_enriched["ds"].max()
-    listing_df_last = listing_df_enriched.query("ds == @last_date_ts").copy()
-    listing_df_last["Carta"] = nombre_carta
-    list_of_dfs.append(listing_df_last)
-    time.sleep(
-            TIEMPO_SLEEP_ENTRE_CARTAS
-        ) 
 
-df = pd.concat(list_of_dfs).reset_index(drop=True)
+###
 
-# TODO: Revisar porqué hay casos con fecha_ultima_venta superior a la fecha actual
-df["Dias_Transcurridos_tras_ultima_venta"] = (
-    df["ds"] - df["fecha_ultima_venta"]
-).dt.days
+mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity = naive.detectar_oportunidad_una_carta(4255)
+
+# Create a temporary DataFrame for the current card
+temp_df = pd.DataFrame({
+    'ID': [4255],
+    'mav': [mav],
+    'std': [std],
+    'last_date_listed': [last_date_listed],
+    'last_sell_price': [last_sell_price],
+    'cheaper_value': [cheaper_value],
+    'mean_days_to_sell': [mean_days_to_sell],
+    'opportunity': [opportunity]
+})
+
+
+sells_df_pupa, listing_df_pupa = naive.obtener_datos_carta(4003)
+sells_df_bonechewer, listing_df_bonechewer= naive.obtener_datos_carta(8238)
+
+df_with_card_names[df_with_card_names['cheaper_value'] < df_with_card_names['mav']]
