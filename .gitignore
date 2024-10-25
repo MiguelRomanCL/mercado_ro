@@ -10,3 +10,4 @@ lambda_functions/fetch-api/package
 files
 *.csv
 *.log
+venv
