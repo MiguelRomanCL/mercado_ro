@@ -21,6 +21,10 @@ class ItemDataFetcher:
 
     def fetch_data(self):
         request_url = self.base_url + str(self.id_item)
+        link_free_proxy = 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=http&proxy_format=protocolipport&format=json&timeout=20000'
+        proxy_list = requests.get(link_free_proxy)
+
+
         result = requests.get(request_url, headers=self.headers)
         data = result.json()
         self.hora_actualizacion = time.strftime(
@@ -84,39 +88,3 @@ class ItemDataFetcher:
         plt.title("Historial de Precios")
         plt.legend()
         plt.show()
-
-    @classmethod
-    def prepare_feature_matrix(cls, dataframe):
-        rango_ventana = np.arange(1, 31)
-        list_of_rows = []
-        for current_index, row in dataframe.iterrows():
-            if current_index + 31 > len(dataframe):
-                break
-            dict_info = OrderedDict(
-                {
-                    "precio": row["y"],
-                    "fecha": row["ds"],
-                    **{
-                        f"t-{i}": dataframe.iloc[current_index + i]["y"]
-                        for i in rango_ventana
-                    },
-                }
-            )
-            list_of_rows.append(dict_info)
-        return pd.DataFrame(list_of_rows).iloc[::-1].reset_index(drop=True)
-
-
-#
-def filtrar_elementos_sin_carta(datos, upgrade=0):
-    return [
-        elemento
-        for elemento in datos
-        if all(
-            filter_item["r"] == upgrade
-            and filter_item["c0"] == 0
-            and filter_item["c1"] == 0
-            and filter_item["c2"] == 0
-            and filter_item["c3"] == 0
-            for filter_item in elemento["filter"]
-        )
-    ]
