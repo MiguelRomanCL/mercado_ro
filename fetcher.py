@@ -76,15 +76,3 @@ class ItemDataFetcher:
             None
         )  # Convertir a tz-naive
         self.listing_dataframe["y"] = self.listing_dataframe["y"].astype(float)
-
-    def plot_data(self):
-        plt.figure(figsize=(12, 6))
-        plt.plot(self.sells_dataframe["ds"], self.sells_dataframe["y"], label="Ventas")
-        plt.plot(
-            self.listing_dataframe["ds"], self.listing_dataframe["y"], label="Vending"
-        )
-        plt.xlabel("Fecha")
-        plt.ylabel("Precio")
-        plt.title("Historial de Precios")
-        plt.legend()
-        plt.show()
