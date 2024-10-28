@@ -21,23 +21,37 @@ class ItemDataFetcher:
 
     def fetch_data(self):
         request_url = self.base_url + str(self.id_item)
-        result = requests.get(request_url, headers=self.headers)
-        data = result.json()
-        self.hora_actualizacion = time.strftime(
-            "%a, %d %b %Y %H:%M:%S +0000", time.gmtime((data["lastUpdated"] / 1000))
-        )
-        self._process_sells(data["sellHistory"])
-        self._process_listing(data["vendHistory"])
+        proxy_df = self._process_proxies()
+        for _,row in proxy_df.iterrows():
+            proxy = {"http": row['proxy'], "https": row['proxy']}
+            time.sleep(2)
+            try:           
+                result = requests.get(request_url, headers=self.headers, proxies=proxy)
+            
+                if result.status_code == 200:
+                    print(f"Success with proxy {row['proxy']}")
+                    data = result.json()
+                    self.hora_actualizacion = time.strftime(
+                        "%a, %d %b %Y %H:%M:%S +0000", time.gmtime((data["lastUpdated"] / 1000))
+                    )
+                    self._process_sells(data["sellHistory"])
+                    self._process_listing(data["vendHistory"])
+                
+                            # Ordenar los DataFrames por la columna de fechas
+                    self.sells_dataframe = self.sells_dataframe.sort_values(by="ds").reset_index(
+                        drop=True
+                    )
+                    self.listing_dataframe = self.listing_dataframe.sort_values(
+                        by="ds"
+                    ).reset_index(drop=True)
 
-        # Ordenar los DataFrames por la columna de fechas
-        self.sells_dataframe = self.sells_dataframe.sort_values(by="ds").reset_index(
-            drop=True
-        )
-        self.listing_dataframe = self.listing_dataframe.sort_values(
-            by="ds"
-        ).reset_index(drop=True)
+                    self.raw_data = data
+                    break
+            except requests.RequestException as e:
+                print(f"Failed with proxy {row['proxy']}: {e}")
 
-        self.raw_data = data
+
+
 
     def _process_sells(self, sell_history):
         for sell_iterate in range(0, len(sell_history)):
@@ -73,50 +87,28 @@ class ItemDataFetcher:
         )  # Convertir a tz-naive
         self.listing_dataframe["y"] = self.listing_dataframe["y"].astype(float)
 
-    def plot_data(self):
-        plt.figure(figsize=(12, 6))
-        plt.plot(self.sells_dataframe["ds"], self.sells_dataframe["y"], label="Ventas")
-        plt.plot(
-            self.listing_dataframe["ds"], self.listing_dataframe["y"], label="Vending"
-        )
-        plt.xlabel("Fecha")
-        plt.ylabel("Precio")
-        plt.title("Historial de Precios")
-        plt.legend()
-        plt.show()
+    def _process_proxies(self):
+        "el filtro es solo de US y http y formato json: https://proxyscrape.com/free-proxy-list"
+        link_free_proxy = 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=http&country=us&proxy_format=protocolipport&format=json&timeout=20000'
+        proxy_list = requests.get(link_free_proxy)
+        proxy_json = proxy_list.json()
+        # Extract relevant fields from each proxy
+        proxy_data = [
+            {
+                "alive": proxy.get("alive"),
+                "alive_since": proxy.get("alive_since"),
+                "port": proxy.get("port"),
+                "protocol": proxy.get("protocol"),
+                "proxy": proxy.get("proxy"),
+                "ip": proxy.get("ip")
+            }
+            for proxy in proxy_json.get("proxies", [])
+        ]
 
-    @classmethod
-    def prepare_feature_matrix(cls, dataframe):
-        rango_ventana = np.arange(1, 31)
-        list_of_rows = []
-        for current_index, row in dataframe.iterrows():
-            if current_index + 31 > len(dataframe):
-                break
-            dict_info = OrderedDict(
-                {
-                    "precio": row["y"],
-                    "fecha": row["ds"],
-                    **{
-                        f"t-{i}": dataframe.iloc[current_index + i]["y"]
-                        for i in rango_ventana
-                    },
-                }
-            )
-            list_of_rows.append(dict_info)
-        return pd.DataFrame(list_of_rows).iloc[::-1].reset_index(drop=True)
+        #limito a maximo 30 proxys, solo para no iterar sobre una posible lista gigante
+        proxy_df = pd.DataFrame(proxy_data).sort_values(by ='alive_since', ascending = False).reset_index(drop=True).head(30)
+        
+        return proxy_df
+        
 
 
-#
-def filtrar_elementos_sin_carta(datos, upgrade=0):
-    return [
-        elemento
-        for elemento in datos
-        if all(
-            filter_item["r"] == upgrade
-            and filter_item["c0"] == 0
-            and filter_item["c1"] == 0
-            and filter_item["c2"] == 0
-            and filter_item["c3"] == 0
-            for filter_item in elemento["filter"]
-        )
-    ]

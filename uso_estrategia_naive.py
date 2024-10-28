@@ -12,8 +12,13 @@ df_cartas = naive.cargar_datos()
 all_cards_opportunities = pd.DataFrame()
 for card_id in df_cartas['ID']:
     print (card_id)
-    mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity = naive.detectar_oportunidad_una_carta(card_id)
+    try:
+        mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity = naive.detectar_oportunidad_una_carta(card_id)
 
+    except Exception as e:
+        print(f"Failed to process card {card_id}: {e}")
+        mav, std, last_date_listed, cheaper_value, last_sell_price, mean_days_to_sell, opportunity = [None] * 7
+    
     # Create a temporary DataFrame for the current card
     temp_df = pd.DataFrame({
         'ID': [card_id],
@@ -31,4 +36,3 @@ for card_id in df_cartas['ID']:
 
 df_with_card_names = pd.merge(df_cartas, all_cards_opportunities, how = 'left', on = 'ID')
 df_with_card_names.to_csv('test.csv', sep = ';')
-
