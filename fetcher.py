@@ -21,27 +21,37 @@ class ItemDataFetcher:
 
     def fetch_data(self):
         request_url = self.base_url + str(self.id_item)
-        link_free_proxy = 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=http&proxy_format=protocolipport&format=json&timeout=20000'
-        proxy_list = requests.get(link_free_proxy)
+        proxy_df = self._process_proxies()
+        for _,row in proxy_df.iterrows():
+            proxy = {"http": row['proxy'], "https": row['proxy']}
+            time.sleep(2)
+            try:           
+                result = requests.get(request_url, headers=self.headers, proxies=proxy)
+            
+                if result.status_code == 200:
+                    print(f"Success with proxy {row['proxy']}")
+                    data = result.json()
+                    self.hora_actualizacion = time.strftime(
+                        "%a, %d %b %Y %H:%M:%S +0000", time.gmtime((data["lastUpdated"] / 1000))
+                    )
+                    self._process_sells(data["sellHistory"])
+                    self._process_listing(data["vendHistory"])
+                
+                            # Ordenar los DataFrames por la columna de fechas
+                    self.sells_dataframe = self.sells_dataframe.sort_values(by="ds").reset_index(
+                        drop=True
+                    )
+                    self.listing_dataframe = self.listing_dataframe.sort_values(
+                        by="ds"
+                    ).reset_index(drop=True)
+
+                    self.raw_data = data
+                    break
+            except requests.RequestException as e:
+                print(f"Failed with proxy {row['proxy']}: {e}")
 
 
-        result = requests.get(request_url, headers=self.headers)
-        data = result.json()
-        self.hora_actualizacion = time.strftime(
-            "%a, %d %b %Y %H:%M:%S +0000", time.gmtime((data["lastUpdated"] / 1000))
-        )
-        self._process_sells(data["sellHistory"])
-        self._process_listing(data["vendHistory"])
 
-        # Ordenar los DataFrames por la columna de fechas
-        self.sells_dataframe = self.sells_dataframe.sort_values(by="ds").reset_index(
-            drop=True
-        )
-        self.listing_dataframe = self.listing_dataframe.sort_values(
-            by="ds"
-        ).reset_index(drop=True)
-
-        self.raw_data = data
 
     def _process_sells(self, sell_history):
         for sell_iterate in range(0, len(sell_history)):
@@ -76,3 +86,29 @@ class ItemDataFetcher:
             None
         )  # Convertir a tz-naive
         self.listing_dataframe["y"] = self.listing_dataframe["y"].astype(float)
+
+    def _process_proxies(self):
+        "el filtro es solo de US y http y formato json: https://proxyscrape.com/free-proxy-list"
+        link_free_proxy = 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&protocol=http&country=us&proxy_format=protocolipport&format=json&timeout=20000'
+        proxy_list = requests.get(link_free_proxy)
+        proxy_json = proxy_list.json()
+        # Extract relevant fields from each proxy
+        proxy_data = [
+            {
+                "alive": proxy.get("alive"),
+                "alive_since": proxy.get("alive_since"),
+                "port": proxy.get("port"),
+                "protocol": proxy.get("protocol"),
+                "proxy": proxy.get("proxy"),
+                "ip": proxy.get("ip")
+            }
+            for proxy in proxy_json.get("proxies", [])
+        ]
+
+        #limito a maximo 30 proxys, solo para no iterar sobre una posible lista gigante
+        proxy_df = pd.DataFrame(proxy_data).sort_values(by ='alive_since', ascending = False).reset_index(drop=True).head(30)
+        
+        return proxy_df
+        
+
+
