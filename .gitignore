@@ -11,3 +11,4 @@ files
 *.csv
 *.log
 venv
+tmp
