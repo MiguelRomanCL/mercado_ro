@@ -26,7 +26,7 @@ class ItemDataFetcher:
             proxy = {"http": row['proxy'], "https": row['proxy']}
             time.sleep(2)
             try:           
-                result = requests.get(request_url, headers=self.headers, proxies=proxy)
+                result = requests.get(request_url, headers=self.headers, proxies=proxy, timeout=5)
             
                 if result.status_code == 200:
                     print(f"Success with proxy {row['proxy']}")
