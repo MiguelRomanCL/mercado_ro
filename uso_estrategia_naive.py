@@ -12,7 +12,6 @@ from parameters import (
 
 
 df_cartas = naive.cargar_datos()
-df_cartas = df_cartas.head(3)
 
 all_cards_opportunities = pd.DataFrame()
 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -83,3 +82,5 @@ bucket_name = 'romillario-opportunities'
 name_folder = 'opportunities_naive'
 s3_file_path = f'{name_folder}/extracted_date={today_date}/df_opportunities_{today_date}.parquet'
 s3.upload_file('tmp/tmp.parquet', bucket_name, s3_file_path)
+
+print(f"Proceso completado exitosamente, hora inicio: {timestamp}")
