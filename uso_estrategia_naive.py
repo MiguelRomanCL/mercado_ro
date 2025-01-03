@@ -12,8 +12,11 @@ from parameters import (
 
 
 df_cartas = naive.cargar_datos()
+df_cartas = df_cartas.head(3)
 
 all_cards_opportunities = pd.DataFrame()
+timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 for card_id in df_cartas['ID']:
     print (card_id)
     try:
@@ -32,7 +35,8 @@ for card_id in df_cartas['ID']:
         'last_sell_price': [last_sell_price],
         'cheaper_value': [cheaper_value],
         'mean_days_to_sell': [mean_days_to_sell],
-        'opportunity': [opportunity]
+        'opportunity': [opportunity],
+        'extracted_ts' : [timestamp]
     })
 
     all_cards_opportunities = pd.concat([all_cards_opportunities, temp_df], ignore_index=True)
