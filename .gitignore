@@ -12,3 +12,4 @@ files
 *.log
 venv
 tmp
+log.txt
