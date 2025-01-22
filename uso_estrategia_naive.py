@@ -83,4 +83,57 @@ name_folder = 'opportunities_naive'
 s3_file_path = f'{name_folder}/extracted_date={today_date}/df_opportunities_{today_date}.parquet'
 s3.upload_file('tmp/tmp.parquet', bucket_name, s3_file_path)
 
+athena_client = session.client('athena', region_name='us-east-1')
+
+# Athena query parameters
+athena_database = 'default'  # Replace with your database name
+athena_table = 'opportunities_naive'        # Replace with your table name
+output_location = 's3://romillario-opportunities/athena-results/'  # Set your Athena query result location
+
+# Construct the query to add a partition
+query = f"""
+ALTER TABLE {athena_table}
+ADD IF NOT EXISTS
+PARTITION (extracted_date = '{today_date}')
+LOCATION 's3://{bucket_name}/{name_folder}/extracted_date={today_date}/';
+"""
+
+# Execute the query
+response = athena_client.start_query_execution(
+    QueryString=query,
+    QueryExecutionContext={
+        'Database': athena_database
+    },
+    ResultConfiguration={
+        'OutputLocation': output_location
+    }
+)
+
+# Get query execution ID for tracking
+query_execution_id = response['QueryExecutionId']
+print(f"Athena query execution started. QueryExecutionId: {query_execution_id}")
+
+while True:
+    status = athena_client.get_query_execution(QueryExecutionId=query_execution_id)
+    state = status['QueryExecution']['Status']['State']
+    if state in ['SUCCEEDED', 'FAILED', 'CANCELLED']:
+        break
+    print("Waiting for Athena query to complete...")
+    time.sleep(5)
+
+if state == 'SUCCEEDED':
+    print("Partition added successfully.")
+else:
+    print(f"Query failed with state: {state}. Details: {status['QueryExecution']['Status']['StateChangeReason']}")
+
+# Crear cliente Lambda #la region deberia estar en algun lado de parametro
+lambda_client = session.client('lambda', region_name='us-east-1')
+
+# Invocar la función Lambda
+response = lambda_client.invoke(
+    FunctionName='enviar_notificaciones',  # Reemplaza con el nombre de tu función Lambda
+    InvocationType='Event'  # 'Event' hace que la invocación sea asíncrona
+)
+
+print(f"Lambda invocado: {response}")
 print(f"Proceso completado exitosamente, hora inicio: {timestamp}")
