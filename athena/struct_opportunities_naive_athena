@@ -1,0 +1,15 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS `default`.`opportunities_naive` (
+  id int,
+  mav float,
+  std float,
+  last_date_listed date,
+  last_sell_price float,
+  cheaper_value float,
+  mean_days_to_sell float,
+  opportunity int
+)
+PARTITIONED BY (extracted_date string)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+LOCATION 's3://romillario-opportunities/opportunities_naive/'
+TBLPROPERTIES ('classification' = 'parquet');

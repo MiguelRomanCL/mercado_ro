@@ -1,0 +1,362 @@
+[
+    {
+      "Nombre": "Vadon Card",
+      "ID": 4049
+    },
+    {
+      "Nombre": "Hydra Card",
+      "ID": 4035
+    },
+    {
+      "Nombre": "Raydric Card",
+      "ID": 4133
+    },
+    {
+      "Nombre": "Flora Card",
+      "ID": 4080
+    },
+    {
+      "Nombre": "Marc Card",
+      "ID": 4105
+    },
+    {
+      "Nombre": "Evil Druid Card",
+      "ID": 4141
+    },
+    {
+      "Nombre": "Mandragora Card",
+      "ID": 4030
+    },
+    {
+      "Nombre": "Caramel Card",
+      "ID": 4063
+    },
+    {
+      "Nombre": "Zerom Card",
+      "ID": 4064
+    },
+    {
+      "Nombre": "Giant Whisper Card",
+      "ID": 4303
+    },
+    {
+      "Nombre": "Corruptor Card",
+      "ID": 8218
+    },
+    {
+      "Nombre": "Elder Willow Card",
+      "ID": 4052
+    },
+    {
+      "Nombre": "Magnolia Card",
+      "ID": 4076
+    },
+    {
+      "Nombre": "Nightmare Card",
+      "ID": 4127
+    },
+    {
+      "Nombre": "Marduk Card",
+      "ID": 4112
+    },
+    {
+      "Nombre": "Savage Bebe Card",
+      "ID": 4017
+    },
+    {
+      "Nombre": "Pecopeco Egg Card",
+      "ID": 4007
+    },
+    {
+      "Nombre": "Sohee Card",
+      "ID": 4100
+    },
+    {
+      "Nombre": "Medusa Card",
+      "ID": 4124
+    },
+    {
+      "Nombre": "Bigfoot Card",
+      "ID": 4074
+    },
+    {
+      "Nombre": "Khalitzburg Card",
+      "ID": 4136
+    },
+    {
+      "Nombre": "Thara Frog Card",
+      "ID": 4058
+    },
+    {
+      "Nombre": "Orc Warrior Card",
+      "ID": 4066
+    },
+    {
+      "Nombre": "Orc Lady Card",
+      "ID": 4255
+    },
+    {
+      "Nombre": "Willow Card",
+      "ID": 4010
+    },
+    {
+      "Nombre": "Roda Frog Card",
+      "ID": 4014
+    },
+    {
+      "Nombre": "Verit Card",
+      "ID": 4107
+    },
+    {
+      "Nombre": "Matyr Card",
+      "ID": 4097
+    },
+    {
+      "Nombre": "Pasana Card",
+      "ID": 4099
+    },
+    {
+      "Nombre": "Dokebi Card",
+      "ID": 4098
+    },
+    {
+      "Nombre": "Swordfish Card",
+      "ID": 4089
+    },
+    {
+      "Nombre": "Sandman Card",
+      "ID": 4101
+    },
+    {
+      "Nombre": "Bathory Card",
+      "ID": 4119
+    },
+    {
+      "Nombre": "Marse Card",
+      "ID": 4095
+    },
+    {
+      "Nombre": "Pecopeco Card",
+      "ID": 4031
+    },
+    {
+      "Nombre": "Pupa Card",
+      "ID": 4003
+    },
+    {
+      "Nombre": "Dustiness Card",
+      "ID": 4056
+    },
+    {
+      "Nombre": "Jakk Card",
+      "ID": 4109
+    },
+    {
+      "Nombre": "Whisper Card",
+      "ID": 4102
+    },
+    {
+      "Nombre": "Nine Tail Card",
+      "ID": 4159
+    },
+    {
+      "Nombre": "Horong Card",
+      "ID": 4103
+    },
+    {
+      "Nombre": "Creamy Card",
+      "ID": 4040
+    },
+    {
+      "Nombre": "Vitata Card",
+      "ID": 4053
+    },
+    {
+      "Nombre": "Condor Card",
+      "ID": 4015
+    },
+    {
+      "Nombre": "Core Card",
+      "ID": 90004
+    },
+    {
+      "Nombre": "Alligator Card",
+      "ID": 4252
+    },
+    {
+      "Nombre": "Cruiser Card",
+      "ID": 4297
+    },
+    {
+      "Nombre": "Baby Desert Wolf Card",
+      "ID": 4023
+    },
+    {
+      "Nombre": "Archer Skeleton Card",
+      "ID": 4094
+    },
+    {
+      "Nombre": "Soldier Skeleton Card",
+      "ID": 4086
+    },
+    {
+      "Nombre": "Dragon Tail card",
+      "ID": 4178
+    },
+    {
+      "Nombre": "Earth Deleter Card",
+      "ID": 4279
+    },
+    {
+      "Nombre": "Spring Rabbit Card",
+      "ID": 4227
+    },
+    {
+      "Nombre": "Magmawhip Card",
+      "ID": 90000
+    },
+    {
+      "Nombre": "Mantis Card",
+      "ID": 4079
+    },
+    {
+      "Nombre": "Greatest General Card",
+      "ID": 4283
+    },
+    {
+      "Nombre": "Dullahan Card",
+      "ID": 4176
+    },
+    {
+      "Nombre": "Smokie Card",
+      "ID": 4044
+    },
+    {
+      "Nombre": "Andre Card",
+      "ID": 4043
+    },
+    {
+      "Nombre": "Santa Poring Card",
+      "ID": 4005
+    },
+    {
+      "Nombre": "Cookie Card",
+      "ID": 4293
+    },
+    {
+      "Nombre": "Myst Case Card",
+      "ID": 4206
+    },
+    {
+      "Nombre": "Mimic Card",
+      "ID": 4205
+    },
+    {
+      "Nombre": "Picky Card",
+      "ID": 4008
+    },
+    {
+      "Nombre": "Raggler Card",
+      "ID": 4186
+    },
+    {
+      "Nombre": "Savage Card",
+      "ID": 4078
+    },
+    {
+      "Nombre": "Cramp Card",
+      "ID": 4296
+    },
+    {
+      "Nombre": "Puck Card",
+      "ID": 8240
+    },
+    {
+      "Nombre": "Rekenber Soldier Card",
+      "ID": 90002
+    },
+    {
+      "Nombre": "Rekenber Mercenary Card",
+      "ID": 90009
+    },
+    {
+      "Nombre": "Enchanted Peach tree Card",
+      "ID": 4217
+    },
+    {
+      "Nombre": "Bonechewer Card",
+      "ID": 8238
+    },
+    {
+      "Nombre": "Sky Deleter Card",
+      "ID": 4158
+    },
+    {
+      "Nombre": "Kobold Card",
+      "ID": 4091
+    },
+    {
+      "Nombre": "Pest Card",
+      "ID": 4315
+    },
+    {
+      "Nombre": "Tarou Card",
+      "ID": 4028
+    },
+    {
+      "Nombre": "Stem Worm Card",
+      "ID": 4224
+    },
+    {
+      "Nombre": "Mummy Card",
+      "ID": 4106
+    },
+    {
+      "Nombre": "Wolf Card",
+      "ID": 4029
+    },
+    {
+      "Nombre": "Kukre Card",
+      "ID": 4027
+    },
+    {
+      "Nombre": "Merman Card",
+      "ID": 4199
+    },
+    {
+      "Nombre": "Strouf Card",
+      "ID": 4111
+    },
+    {
+      "Nombre": "Sky Petite Card",
+      "ID": 4120
+    },
+    {
+      "Nombre": "Fabre Card",
+      "ID": 4002
+    },
+    {
+      "Nombre": "Wolpertinger Card",
+      "ID": 8243
+    },
+    {
+      "Nombre": "Kodama Card",
+      "ID": 8245
+    },
+    {
+      "Nombre": "Skel Worker Card",
+      "ID": 4092
+    },
+    {
+      "Nombre": "Minorous Card",
+      "ID": 4126
+    },
+    {
+      "Nombre": "Desert Wolf Card",
+      "ID": 4082
+    },
+    {
+      "Nombre": "Goblin Card",
+      "ID": 4060
+    }
+  ]
